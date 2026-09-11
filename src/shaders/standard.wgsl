@@ -44,9 +44,9 @@ struct MaterialUniform {
     transmission: f32,
     emission_color: vec4<f32>,
     use_normal_map: u32,
-    _pad1: u32,
-    _pad2: u32,
-    _pad3: u32,
+    clearcoat: f32,
+    clearcoat_roughness: f32,
+    subsurface: f32,
 };
 
 @group(0) @binding(0)
@@ -358,9 +358,14 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let shininess = mix(320.0, 4.0, roughness);
     let spec_factor = pow(NdotH, shininess) * ((shininess + 2.0) / 8.0);
     let sun_specular = F * spec_factor * light.color.rgb * NdotL * light.position.w * light_visibility;
-
     let kD = (vec3<f32>(1.0) - F) * (1.0 - metallic);
-    let sun_diffuse = kD * albedo * light.color.rgb * NdotL * light.position.w * light_visibility;
+    let sun_diffuse_std = kD * albedo * light.color.rgb * NdotL * light.position.w * light_visibility;
+
+    // Modèle de Diffusion Sous-Surfacique (Subsurface Scattering SSS - Wrap Lighting)
+    let sss_wrap = clamp(material.subsurface, 0.0, 1.0);
+    let sss_ndotl = clamp((dot(N, L_sun) + sss_wrap) / (1.0 + sss_wrap), 0.0, 1.0);
+    let sss_sun_diffuse = kD * albedo * light.color.rgb * sss_ndotl * light.position.w * light_visibility;
+    let sun_diffuse = mix(sun_diffuse_std, sss_sun_diffuse, sss_wrap);
 
     // 7. Éclairage Multi-Lumières Ponctuelles (Lanternes, Feux, Cristaux)
     var point_diffuse = vec3<f32>(0.0);
@@ -384,7 +389,8 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
             let attenuation = att_dist * (window * window) * pt.color.w;
 
             let light_energy = pt.color.rgb * attenuation;
-            point_diffuse = point_diffuse + kD * albedo * light_energy * NdotL_pt;
+            let pt_ndotl = mix(NdotL_pt, clamp((dot(N, L_pt) + sss_wrap) / (1.0 + sss_wrap), 0.0, 1.0), sss_wrap);
+            point_diffuse = point_diffuse + kD * albedo * light_energy * pt_ndotl;
             point_specular = point_specular + F * pow(NdotH_pt, shininess) * ((shininess + 2.0) / 8.0) * light_energy * NdotL_pt;
         }
     }
@@ -409,11 +415,27 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
 
     let ibl_diffuse = kD_env * env_diffuse * albedo;
     let ibl_specular = F_env * env_specular;
-    let ambient_ibl = (ibl_diffuse + ibl_specular + light.ambient.rgb * albedo * 0.25) * ssao_factor;
 
+    // 7b. Couche Spéculaire de Vernis Multicouche (Clearcoat Lobe)
+    var clearcoat_energy = vec3<f32>(0.0);
+    if (material.clearcoat > 0.001) {
+        let cc_roughness = clamp(material.clearcoat_roughness, 0.01, 1.0);
+        let cc_shininess = mix(600.0, 16.0, cc_roughness);
+        let F_cc = 0.04 + 0.96 * pow(1.0 - max(dot(H_sun, V), 0.0), 5.0);
+        let cc_sun = F_cc * pow(NdotH, cc_shininess) * ((cc_shininess + 2.0) / 8.0) * light.color.rgb * NdotL * light.position.w * light_visibility;
+
+        let cc_env_lod = cc_roughness * max_lod;
+        let cc_env_specular = textureSampleLevel(t_skybox, s_skybox, R, cc_env_lod).rgb;
+        let F_cc_env = 0.04 + 0.96 * pow(1.0 - NdotV, 5.0);
+        let cc_ibl = F_cc_env * cc_env_specular * ssao_factor;
+
+        clearcoat_energy = (cc_sun + cc_ibl) * material.clearcoat;
+    }
+
+    let ambient_ibl = (ibl_diffuse + ibl_specular + light.ambient.rgb * albedo * 0.25) * ssao_factor;
     let emission = material.emission_color.rgb * material.emission_color.a * 1.8;
 
-    var final_color = ambient_ibl + sun_diffuse + sun_specular + point_diffuse + point_specular + emission;
+    var final_color = ambient_ibl + sun_diffuse + sun_specular + point_diffuse + point_specular + clearcoat_energy + emission;
 
     // 8. Rendu Réel de l'Eau avec Réflexions Planaires GPU (Mode Jeu Vidéo)
     if (material.transmission > 0.05 && light.render_flags == 1u) {

@@ -178,7 +178,9 @@ impl BladeRunnerGameApp {
                 transmission: 0.0,
                 emission_color: [0.1, 2.5, 3.8, 1.0], // Réacteurs néon cyan
                 use_normal_map: 0,
-                _pad1: 0, _pad2: 0, _pad3: 0,
+                clearcoat: 1.0,
+                clearcoat_roughness: 0.03,
+                subsurface: 0.1,
             };
         }
         self.spinner_node_idx = s_idx;

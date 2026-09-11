@@ -43,7 +43,9 @@ fn main() {
             transmission: 0.0,
             emission_color: [0.2, 2.0, 3.5, 1.0],
             use_normal_map: 0,
-            _pad1: 0, _pad2: 0, _pad3: 0,
+            clearcoat: 1.0,
+            clearcoat_roughness: 0.03,
+            subsurface: 0.2,
         };
         node.update_gpu(&queue, false);
     }

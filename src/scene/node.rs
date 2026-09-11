@@ -47,11 +47,11 @@ pub struct MaterialUniform {
     pub emission_color: [f32; 4], // offset 32 (16 octets)
     pub use_normal_map: u32,      // offset 48 (4 octets)
     #[serde(default)]
-    pub _pad1: u32,               // offset 52 (4 octets)
+    pub clearcoat: f32,           // offset 52 (4 octets - couche de vernis brillant 0.0..1.0)
     #[serde(default)]
-    pub _pad2: u32,               // offset 56 (4 octets)
+    pub clearcoat_roughness: f32, // offset 56 (4 octets - rugosité du vernis 0.0..1.0)
     #[serde(default)]
-    pub _pad3: u32,               // offset 60 (4 octets)
+    pub subsurface: f32,          // offset 60 (4 octets - diffusion sous-surfacique SSS 0.0..1.0)
 } // Total = 64 octets
 
 impl Default for MaterialUniform {
@@ -65,9 +65,9 @@ impl Default for MaterialUniform {
             transmission: 0.0,
             emission_color: [0.0, 0.0, 0.0, 0.0],
             use_normal_map: 0,
-            _pad1: 0,
-            _pad2: 0,
-            _pad3: 0,
+            clearcoat: 0.0,
+            clearcoat_roughness: 0.05,
+            subsurface: 0.0,
         }
     }
 }

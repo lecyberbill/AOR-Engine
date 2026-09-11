@@ -91,7 +91,9 @@ pub fn generate_cyber_megalopolis(scene: &mut Scene, device: &wgpu::Device) {
             transmission: 0.0,
             emission_color: [0.01, 0.02, 0.05, 1.0],
             use_normal_map: 0,
-            _pad1: 0, _pad2: 0, _pad3: 0,
+            clearcoat: 0.0,
+            clearcoat_roughness: 0.05,
+            subsurface: 0.0,
         };
     }
 
@@ -144,7 +146,9 @@ pub fn generate_cyber_megalopolis(scene: &mut Scene, device: &wgpu::Device) {
                         transmission: 0.0,
                         emission_color: glow,
                         use_normal_map: 0,
-                        _pad1: 0, _pad2: 0, _pad3: 0,
+                        clearcoat: 0.8,
+                        clearcoat_roughness: 0.05,
+                        subsurface: 0.0,
                     };
                 } else {
                     // Façade vitrée sombre PBR
@@ -157,7 +161,9 @@ pub fn generate_cyber_megalopolis(scene: &mut Scene, device: &wgpu::Device) {
                         transmission: 0.0,
                         emission_color: [0.05, 0.1, 0.18, 1.0],
                         use_normal_map: 0,
-                        _pad1: 0, _pad2: 0, _pad3: 0,
+                        clearcoat: 0.5,
+                        clearcoat_roughness: 0.05,
+                        subsurface: 0.0,
                     };
                 }
             }
@@ -181,7 +187,9 @@ pub fn generate_cyber_megalopolis(scene: &mut Scene, device: &wgpu::Device) {
                 transmission: 0.5,
                 emission_color: [0.2, 3.5, 1.2, 1.0], // Vert Holographique émissif
                 use_normal_map: 0,
-                _pad1: 0, _pad2: 0, _pad3: 0,
+                clearcoat: 0.0,
+                clearcoat_roughness: 0.05,
+                subsurface: 0.0,
             };
         }
     }
