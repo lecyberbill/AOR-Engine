@@ -12,6 +12,7 @@ pub mod ecs;
 pub mod scripting;
 pub mod game;
 pub mod studio;
+pub mod runtime;
 
 pub use gpu::{GpuBuffer, GpuContext, RenderTargetTexture, UniformBuffer};
 pub use scene::{Camera, CameraMode, CameraUniform, GpuInstanceBuffer, GpuMesh, Instance, InstanceRaw, PrimitiveType, Ray, Scene, SceneNode, Vertex};
@@ -23,6 +24,7 @@ pub use audio::{AudioSource3D, SoundEffect, SpatialAudioEngine};
 pub use ecs::{Component, EngineEvent, EntityId, WorldEcs};
 pub use scripting::{ScriptContext, ScriptingEngine};
 pub use game::{CyberCitySystem, CyberSpinner};
+pub use runtime::{EngineApp, EngineConfig, InputState, Inspectable, MaterialBuilder, NodeHandle, PropertyDesc, PropertyKind, PropertyValue, WorldBuilder};
 
 
 

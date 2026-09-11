@@ -37,6 +37,8 @@ pub struct SsrPipeline {
     pub uniform_buffer: UniformBuffer<SsrUniform>,
     pub linear_sampler: wgpu::Sampler,
     pub point_sampler: wgpu::Sampler,
+    pub output_texture: wgpu::Texture,
+    pub output_view: wgpu::TextureView,
     pub width: u32,
     pub height: u32,
 }
@@ -68,6 +70,22 @@ impl SsrPipeline {
             min_filter: wgpu::FilterMode::Nearest,
             ..Default::default()
         });
+
+        let output_texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("SSR Output Texture"),
+            size: wgpu::Extent3d {
+                width: width.max(1),
+                height: height.max(1),
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: target_format,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_SRC,
+            view_formats: &[],
+        });
+        let output_view = output_texture.create_view(&wgpu::TextureViewDescriptor::default());
 
         let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
             label: Some("SSR Bind Group Layout"),
@@ -193,6 +211,8 @@ impl SsrPipeline {
             uniform_buffer,
             linear_sampler,
             point_sampler,
+            output_texture,
+            output_view,
             width,
             height,
         }
@@ -237,24 +257,41 @@ impl SsrPipeline {
         })
     }
 
-    pub fn resize(&mut self, width: u32, height: u32) {
-        self.width = width;
-        self.height = height;
+    pub fn resize(&mut self, device: &wgpu::Device, width: u32, height: u32, target_format: wgpu::TextureFormat) {
+        if self.width == width && self.height == height {
+            return;
+        }
+        self.width = width.max(1);
+        self.height = height.max(1);
+        self.output_texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("SSR Output Texture Resized"),
+            size: wgpu::Extent3d {
+                width: self.width,
+                height: self.height,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: target_format,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_SRC,
+            view_formats: &[],
+        });
+        self.output_view = self.output_texture.create_view(&wgpu::TextureViewDescriptor::default());
     }
 
     pub fn render(
         &self,
         encoder: &mut wgpu::CommandEncoder,
-        target_view: &wgpu::TextureView,
         bind_group: &wgpu::BindGroup,
     ) {
         let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: Some("SSR Render Pass"),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                view: target_view,
+                view: &self.output_view,
                 resolve_target: None,
                 ops: wgpu::Operations {
-                    load: wgpu::LoadOp::Load,
+                    load: wgpu::LoadOp::Clear(wgpu::Color::TRANSPARENT),
                     store: wgpu::StoreOp::Store,
                 },
             })],

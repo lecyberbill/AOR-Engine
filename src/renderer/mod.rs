@@ -1300,11 +1300,11 @@ impl ForwardRenderer {
         context: &GpuContext,
         color_view: &wgpu::TextureView,
         depth_view: &wgpu::TextureView,
-        target_view: &wgpu::TextureView,
         viewport_w: u32,
         viewport_h: u32,
+        target_format: wgpu::TextureFormat,
     ) {
-        self.ssr.resize(viewport_w, viewport_h);
+        self.ssr.resize(&context.device, viewport_w, viewport_h, target_format);
         let bind_group = self.ssr.create_bind_group(
             &context.device,
             &self.camera_uniform,
@@ -1316,7 +1316,7 @@ impl ForwardRenderer {
             label: Some("SSR Resolve Command Encoder"),
         });
 
-        self.ssr.render(&mut encoder, target_view, &bind_group);
+        self.ssr.render(&mut encoder, &bind_group);
 
         context.queue.submit(std::iter::once(encoder.finish()));
     }
