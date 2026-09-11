@@ -1,0 +1,64 @@
+[package]
+name = "rust_moteur_3d"
+version = "0.1.0"
+edition = "2024"
+default-run = "rust_moteur_3d"
+
+[dependencies]
+ui-core = { path = "../../Projet/UIr/crates/ui-core" }
+ui-gpu = { path = "../../Projet/UIr/crates/ui-gpu" }
+ui-layout = { path = "../../Projet/UIr/crates/ui-layout" }
+ui-widgets = { path = "../../Projet/UIr/crates/ui-widgets" }
+winit = "0.30"
+wgpu = "0.19"
+glyphon = "0.5"
+bytemuck = { version = "1.16", features = ["derive"] }
+glam = { version = "0.27", features = ["bytemuck", "serde"] }
+pollster = "0.3"
+tobj = { version = "4.0", default-features = false }
+rfd = "0.14"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+rayon = "1.10"
+gltf = { version = "1.4", features = [
+    "import",
+    "names",
+    "utils",
+    "KHR_materials_transmission",
+    "KHR_materials_volume",
+    "KHR_materials_specular",
+    "KHR_materials_ior",
+    "KHR_materials_unlit",
+    "KHR_materials_emissive_strength",
+    "KHR_materials_variants",
+    "KHR_materials_pbrSpecularGlossiness",
+    "KHR_lights_punctual",
+    "KHR_texture_transform"
+] }
+rhai = { version = "1.19", default-features = false, features = ["std"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+notify = "8"
+naga = { version = "0.19", features = ["wgsl-in"] }
+
+[[bin]]
+name = "rust_moteur_3d"
+path = "src/main.rs"
+
+[[bin]]
+name = "blade_runner"
+path = "src/bin/blade_runner.rs"
+
+[[bin]]
+name = "runner"
+path = "src/bin/runner.rs"
+
+[[bin]]
+name = "studio_render_probe"
+path = "src/bin/studio_render_probe.rs"
+
+[[bin]]
+name = "render_snapshot"
+path = "src/bin/render_snapshot.rs"
+
+

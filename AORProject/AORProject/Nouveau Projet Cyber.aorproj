@@ -1,0 +1,18 @@
+{
+  "name": "Nouveau Projet Cyber",
+  "version": "0.1.0",
+  "engine_version": "0.1.0",
+  "start_scene": null,
+  "render_settings": {
+    "hdr": true,
+    "bloom": true,
+    "shadows": true,
+    "msaa_samples": 4,
+    "render_scale": 1.0,
+    "ambient_color": [
+      0.05,
+      0.07,
+      0.12
+    ]
+  }
+}
