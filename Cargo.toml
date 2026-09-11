@@ -61,4 +61,8 @@ path = "src/bin/studio_render_probe.rs"
 name = "render_snapshot"
 path = "src/bin/render_snapshot.rs"
 
+[[bin]]
+name = "doom_hangar"
+path = "src/bin/doom_hangar.rs"
+
 
