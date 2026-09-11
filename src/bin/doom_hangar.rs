@@ -174,15 +174,17 @@ impl DoomHangarGameApp {
         let weapon_idx = scene.nodes.len();
         scene.add_custom_mesh(&context.device, "Player_Combat_Shotgun", shotgun_v, shotgun_i);
         if let Some(w_node) = scene.nodes.get_mut(weapon_idx) {
-            w_node.material = MaterialBuilder::car_paint(0.7, 0.03)
-                .metallic(0.9)
-                .roughness(0.12)
+            w_node.color = [0.0, 0.0, 0.0, 0.0]; // Laisser les vertex colors briller (acier, polymère, mire rouge)
+            w_node.material = MaterialBuilder::metal(0.75, 0.22)
+                .clearcoat(0.6, 0.05)
                 .build();
+            w_node.update_gpu(&context.queue, true);
         }
         self.weapon_node_idx = weapon_idx;
 
         let mut forward_renderer = ForwardRenderer::new(&context, rt_format, &scene.model_bind_group_layout);
-        forward_renderer.light_pos = Vec3::new(-10.0, 16.0, -15.0);
+        // Soleil en plongée douce illuminant la coursive, le fusil et la salle
+        forward_renderer.light_pos = Vec3::new(4.0, 14.0, -8.0);
 
         let postprocess = PostProcessPipeline::new(&context.device, rt_format);
         let particles = ParticleSystem::new(&context, rt_format, 2000);

@@ -18,26 +18,33 @@ pub fn build_hangar_level(
     // -------------------------------------------------------------------------
     // 1. SOL & FOSSE D'ACIDE TOXIQUE
     // -------------------------------------------------------------------------
-    // Sol principal en dalles de métal renforcé
+    // Sol principal en dalles de métal renforcé et béton gris sombre
     world.spawn_mesh("Hangar_Main_Floor", PrimitiveType::Plane)
         .at([0.0, 0.0, 0.0])
         .scale([45.0, 1.0, 45.0])
-        .color([0.35, 0.36, 0.38, 1.0])
+        .color([0.22, 0.23, 0.25, 1.0])
         .material(
-            MaterialBuilder::metal(0.85, 0.22)
-                .clearcoat(0.3, 0.1)
+            MaterialBuilder::metal(0.65, 0.35)
+                .clearcoat(0.2, 0.1)
         );
+
+    // Bordure en pierre sombre de la fosse
+    world.spawn_mesh("Toxic_Basin_Border", PrimitiveType::Cube)
+        .at([12.0, 0.08, 0.0])
+        .scale([14.8, 0.16, 14.8])
+        .color([0.15, 0.16, 0.18, 1.0])
+        .material(MaterialBuilder::metal(0.4, 0.5));
 
     // Fosse d'acide toxique vert émeraude radioactive (surface liquide PBR miroitante)
     world.spawn_mesh("Toxic_Slime_Pool", PrimitiveType::Plane)
-        .at([12.0, 0.05, 0.0])
+        .at([12.0, 0.12, 0.0])
         .scale([14.0, 1.0, 14.0])
-        .color([0.15, 0.85, 0.25, 1.0])
+        .color([0.12, 0.72, 0.20, 1.0])
         .material(
-            MaterialBuilder::car_paint(0.9, 0.02)
-                .metallic(0.2)
+            MaterialBuilder::car_paint(0.9, 0.03)
+                .metallic(0.1)
                 .roughness(0.08)
-                .emission([0.1, 0.8, 0.2], 0.6) // Luminescence radioactive verte équilibrée
+                .emission([0.08, 0.55, 0.12], 0.4) // Luminescence radioactive verte équilibrée
         );
 
     // -------------------------------------------------------------------------
@@ -149,14 +156,26 @@ pub fn build_hangar_level(
 
     // Démon Imp posté près de la fosse toxique
     let imp_node = world.spawn_mesh("Demon_Imp_Target", PrimitiveType::Pyramid)
-        .at([12.0, 1.2, 0.0])
+        .at([8.0, 1.2, 3.0])
         .scale([1.6, 2.4, 1.6])
         .color([0.72, 0.28, 0.18, 1.0]) // Teinte cuir démon rouge/brun
         .material(
             MaterialBuilder::organic(0.45, 0.35)
                 .emission([0.8, 0.1, 0.05], 0.6) // Yeux incandescents
         );
-    entities.push(DoomEntity::new_imp(10, Vec3::new(12.0, 1.2, 0.0), imp_node.index));
+    entities.push(DoomEntity::new_imp(10, Vec3::new(8.0, 1.2, 3.0), imp_node.index));
+
+    // Démon Cacodemon volant au-dessus de la fosse toxique (Sphère rouge vive à cornes)
+    let caco_node = world.spawn_mesh("Demon_Cacodemon", PrimitiveType::Sphere)
+        .at([12.0, 3.2, 0.0])
+        .scale([2.4, 2.4, 2.4])
+        .color([0.88, 0.15, 0.12, 1.0]) // Rouge carmin emblématique
+        .material(
+            MaterialBuilder::organic(0.3, 0.4)
+                .clearcoat(0.5, 0.1)
+                .emission([0.3, 0.02, 0.02], 0.3)
+        );
+    entities.push(DoomEntity::new_imp(11, Vec3::new(12.0, 3.2, 0.0), caco_node.index));
 
     entities
 }

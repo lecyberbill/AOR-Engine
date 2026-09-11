@@ -68,8 +68,8 @@ impl WeaponState {
 
     /// Calcule la transformation locale du fusil à pompe relative à la caméra (avec recul)
     pub fn compute_view_offset(&self) -> Vec3 {
-        // Position de base : vue subjective classique (centrée en bas à droite, avancée vers l'avant)
-        let base_offset = Vec3::new(0.18, -0.20, 0.55);
+        // Position de base : centré au milieu de l'écran comme dans le DOOM original (1993)
+        let base_offset = Vec3::new(0.0, -0.18, 0.45);
 
         if self.recoil_time > 0.0 {
             let t = self.recoil_time / self.recoil_duration;
@@ -142,52 +142,52 @@ pub fn generate_shotgun_mesh() -> (Vec<Vertex>, Vec<u32>) {
         }
     };
 
-    // 1. Carcasse principale (métal gris sombre brossé)
+    // 1. Carcasse principale (métal argenté usiné)
     add_box(
-        Vec3::new(-0.035, -0.045, -0.22),
-        Vec3::new(0.035, 0.045, 0.12),
-        [0.18, 0.19, 0.22, 1.0],
-        0.25,
+        Vec3::new(-0.040, -0.050, -0.22),
+        Vec3::new(0.040, 0.050, 0.14),
+        [0.48, 0.50, 0.54, 1.0],
+        0.20,
     );
 
-    // 2. Canon supérieur de tir (acier noir mat)
+    // 2. Canons jumelés de tir (acier trempé bleuté)
     add_box(
-        Vec3::new(-0.022, 0.015, 0.12),
-        Vec3::new(0.022, 0.045, 0.72),
-        [0.12, 0.13, 0.15, 1.0],
-        0.18,
+        Vec3::new(-0.024, 0.015, 0.14),
+        Vec3::new(0.024, 0.048, 0.76),
+        [0.32, 0.35, 0.40, 1.0],
+        0.15,
     );
 
-    // 3. Tube de magasin inférieur
+    // 3. Tube magasin inférieur (acier brossé)
     add_box(
-        Vec3::new(-0.020, -0.025, 0.12),
-        Vec3::new(0.020, 0.005, 0.65),
-        [0.14, 0.15, 0.17, 1.0],
-        0.22,
+        Vec3::new(-0.022, -0.030, 0.14),
+        Vec3::new(0.022, 0.005, 0.68),
+        [0.40, 0.42, 0.45, 1.0],
+        0.20,
     );
 
-    // 4. Pompe mobile (bois foncé vernis ou polymère texturé)
+    // 4. Pompe mobile (bois de noyer verni chaud classique DOOM)
     add_box(
-        Vec3::new(-0.032, -0.035, 0.25),
-        Vec3::new(0.032, 0.012, 0.48),
-        [0.28, 0.18, 0.12, 1.0],
-        0.45,
+        Vec3::new(-0.036, -0.040, 0.26),
+        Vec3::new(0.036, 0.015, 0.50),
+        [0.55, 0.30, 0.15, 1.0],
+        0.35,
     );
 
-    // 5. Crosse et poignée ergonomique
+    // 5. Crosse et poignée ergonomique (bois sombre)
     add_box(
-        Vec3::new(-0.030, -0.12, -0.36),
-        Vec3::new(0.030, -0.02, -0.20),
-        [0.24, 0.15, 0.10, 1.0],
-        0.55,
+        Vec3::new(-0.032, -0.14, -0.38),
+        Vec3::new(0.032, -0.02, -0.20),
+        [0.45, 0.24, 0.12, 1.0],
+        0.40,
     );
 
-    // 6. Cran de mire avant
+    // 6. Cran de mire avant (rouge vif phosphorescent)
     add_box(
-        Vec3::new(-0.004, 0.045, 0.68),
-        Vec3::new(0.004, 0.058, 0.71),
-        [0.9, 0.2, 0.1, 1.0],
-        0.1,
+        Vec3::new(-0.006, 0.048, 0.72),
+        Vec3::new(0.006, 0.065, 0.75),
+        [1.0, 0.15, 0.05, 1.0],
+        0.05,
     );
 
     crate::scene::mesh::compute_tangents(&mut vertices, &indices);
